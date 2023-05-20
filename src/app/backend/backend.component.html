@@ -1,0 +1,18 @@
+<div *ngIf="selectedLecture">
+    <h3>Edycja książki</h3>
+    <label>Tytuł:</label>
+    <input [(ngModel)]="selectedLecture.title" placeholder="Tytuł książki">
+    <br>
+    <label>Autor:</label>
+    <input [(ngModel)]="selectedLecture.author" placeholder="Autor książki">
+    <br>
+    <!--button (click)="updateBook()">Aktualizuj</button-->
+</div>
+  <hr>
+<h2>Lista książek</h2>
+<ul>
+  <li *ngFor="let book of lectures" (click)="selectLecture(book)">
+    {{ book.title }} - {{ book.author }}
+  </li>
+</ul>
+

@@ -1,0 +1,10 @@
+<div *ngIf="book">
+    <h3>Edycja książki</h3>
+    <label>Tytuł:</label>
+    <input [(ngModel)]="book.title" placeholder="Tytuł książki">
+    <br>
+    <label>Autor:</label>
+    <input [(ngModel)]="book.author" placeholder="Autor książki">
+    <br>
+    <!--button (click)="updateBook()">Aktualizuj</button-->
+  </div>

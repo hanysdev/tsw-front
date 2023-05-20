@@ -1,0 +1,13 @@
+li {
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+  
+  li:hover {
+    background-color: lightgray;
+  }
+  
+  hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }

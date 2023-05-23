@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Lecture } from './lecture';
-import { Observable, tap} from 'rxjs';
+import { OurBook } from './ourBook'
+import { Observable, catchError, tap, throwError} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -20,40 +21,59 @@ export class BackendService {
 
   private updateUrl = 'https://rest-backend-express.herokuapp.com/book-management/books/update';
 
-  private deleteUrl = 'https://rest-backend-express.herokuapp.com/book-management/books/delete';
+  private deleteUrl = 'https://rest-backend-express.herokuapp.com/book-management/books/deleteById';
 
 
   private httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     };
   
-  getAllBooks(): Observable<Lecture[]> {
-    return this.http.get<Lecture[]>(this.getAllBooksUrl)
-  }
+    getAllBooks(): Observable<OurBook[]> {
+      return this.http.get<OurBook[]>(this.getAllBooksUrl).pipe(
+        catchError(this.handleError('getAllBooks', []))
+      );
+    }
+    
+    getOneByTitle(title: string): Observable<OurBook[]> {
+      const url = `${this.getOneByTitleUrl}/${title}`;
+      return this.http.get<OurBook[]>(url).pipe(
+        catchError(this.handleError('getOneByTitle', []))
+      );
+    }
+    
+    getOneByAuthor(author: string): Observable<OurBook[]> {
+      const url = `${this.getOneByAuthorUrl}/${author}`;
+      return this.http.get<OurBook[]>(url).pipe(
+        catchError(this.handleError('getOneByAuthor', []))
+      );
+    }
+    
+    postLecture(lecture: Lecture): Observable<Lecture | null> {
+      return this.http.post<Lecture>(this.postUrl, lecture, this.httpOptions).pipe(
+        catchError(this.handleError('postLecture', null))
+      );
+    }
+    
+    updateLecture(lecture: OurBook): Observable<OurBook | null> {
+      const id = lecture._id;
+      const url = `${this.updateUrl}/${id}`;
+      return this.http.put<OurBook>(this.updateUrl, this.httpOptions).pipe(
+        catchError(this.handleError('updateLecture', null))
+      );
+    }
+    
+    deleteLecture(lecture: OurBook): Observable<OurBook | null> {
+      const id = lecture._id;
+      const url = `${this.deleteUrl}/${id}`;
+    
+      return this.http.delete<OurBook>(url, this.httpOptions)
+    }
 
-  getOneByTitle(title: String): Observable<Lecture[]> {
-    const url = '${this.getOneByTitleUrl}/${title}';
-    return this.http.get<Lecture[]>(url)
-  }
-
-  getOneByAuthor(author: String): Observable<Lecture[]> {
-    const url = '${this.getOneByAuthorUrl}/${author}';
-    return this.http.get<Lecture[]>(url)
-  }
-
-  postLecture (lecture: Lecture): Observable<Lecture> {
-    return this.http.post<Lecture>(this.postUrl, lecture, this.httpOptions)
-  }
-
-  updateLecture (lecture: Lecture): Observable<Lecture> {
-    return this.http.put<Lecture>(this.updateUrl, lecture, this.httpOptions)
-  }
-
-  deleteLecture (lecture: Lecture | string): Observable<Lecture> {
-    const title = typeof lecture === 'string' ? lecture : lecture.title;
-    const url = '${this.deleteUrl}/${title}';
-    return this.http.delete<Lecture>(this.updateUrl, this.httpOptions)
-  }
-
+    private handleError<T>(operation = 'operation', result?: T | null) {
+      return (error: any): Observable<T> => {
+        console.error(`${operation} failed:`, error);
+        return throwError(result as T);
+      };
+    }
 
 }

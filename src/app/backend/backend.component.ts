@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { Lecture } from '../lecture';
+import { OurBook } from '../ourBook'
 import { BackendService } from '../backend.service';
+import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-backend',
@@ -9,30 +11,65 @@ import { BackendService } from '../backend.service';
 })
 export class BackendComponent {
 
-  lectures: Lecture[] | undefined;
+  lectures: OurBook[] = []
+
+  editMode: boolean | undefined
+
+  book: OurBook | undefined
 
   constructor(private backendService: BackendService){ }
 
-  getAllBooks(): void {
-    this.backendService.getAllBooks().subscribe(lectures => this.lectures = lectures)
+  getAllBooks(): Observable<OurBook[]> {
+    return this.backendService.getAllBooks();
   }
 
-  postLecture(lecture: Lecture) {
+  postLecture(lecture: OurBook) {
     this.backendService.postLecture(lecture).subscribe(response => {console.log(response)})
   }
 
   ngOnInit(): void {
-    this.getAllBooks()
+    this.getAllBooks().subscribe((lectures: OurBook[]) => {
+      this.lectures = lectures;
+    });
   }
 
-  selectedLecture: Lecture | undefined;
+  selectedLecture: OurBook | undefined;
 
-  selectLecture(book: Lecture): void {
+  selectLecture(book: OurBook): void {
     this.selectedLecture = book;
   }
 
-  updateBook() {
 
-    console.log('Zapisano zmiany:', this.selectedLecture);
+  deleteBook(lecture: OurBook): void {
+    this.backendService.deleteLecture(lecture)
+      .pipe(
+        tap(() => {
+          this.getAllBooks().subscribe((lectures: OurBook[]) => {
+            this.lectures = lectures;
+          });
+        })
+      )
+      .subscribe(() => {
+        console.log('Książka została usunięta');
+      });
+  }
+
+  editBook(book: OurBook) {
+    this.editMode = true;
+  }
+  
+  saveBook(book: OurBook) {
+    this.editMode = false;
+    this.backendService.updateLecture(book)
+    .pipe(
+      tap(() => {
+        this.getAllBooks().subscribe((lectures: OurBook[]) => {
+          this.lectures = lectures;
+        });
+      })
+    )
+    .subscribe(() => {
+      console.log('Książka została usunięta');
+    });
   }
 }

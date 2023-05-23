@@ -1,0 +1,7 @@
+{
+    "/api/*": {
+      "target": "https://rest-backend-express.herokuapp.com",
+      "secure": false,
+      "changeOrigin": true
+    }
+  }

@@ -1,18 +1,48 @@
-<div *ngIf="selectedLecture">
-    <h3>Edycja książki</h3>
-    <label>Tytuł:</label>
-    <input [(ngModel)]="selectedLecture.title" placeholder="Tytuł książki">
-    <br>
-    <label>Autor:</label>
-    <input [(ngModel)]="selectedLecture.author" placeholder="Autor książki">
-    <br>
-    <!--button (click)="updateBook()">Aktualizuj</button-->
+<div class="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Ikona</th>
+        <th>Tytuł</th>
+        <th>Autor</th>
+        <th>Rodzaj</th>
+        <th>Adres URL</th>
+        <th>Akcje</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let book of lectures">
+        <tr>
+          <td>
+            <img [src]="book.simple_thumb" alt="Ikona" width="40" height="40">
+          </td>
+          <td *ngIf="!editMode">{{ book.title }}</td>
+          <td *ngIf="editMode">
+            <input [(ngModel)]="book.title" class="form-control">
+          </td>
+          <td *ngIf="!editMode">{{ book.author }}</td>
+          <td *ngIf="editMode">
+            <input [(ngModel)]="book.author" class="form-control">
+          </td>
+          <td *ngIf="!editMode">{{ book.kind }}</td>
+          <td *ngIf="editMode">
+            <input [(ngModel)]="book.kind" class="form-control">
+          </td>
+          <td>
+            <a *ngIf="!editMode" [href]="book.href" target="_blank">{{ book.href }}</a>
+            <input *ngIf="editMode" [(ngModel)]="book.href" class="form-control">
+          </td>
+          <td>
+            <div *ngIf="!editMode">
+              <button class="btn btn-danger btn-sm" (click)="deleteBook(book)">Usuń</button>
+              <button class="btn btn-primary btn-sm" (click)="editBook(book)">Edytuj</button>
+            </div>
+            <div *ngIf="editMode">
+              <button class="btn btn-success btn-sm" (click)="saveBook(book)">Zapisz</button>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
 </div>
-  <hr>
-<h2>Lista książek</h2>
-<ul>
-  <li *ngFor="let book of lectures" (click)="selectLecture(book)">
-    {{ book.title }} - {{ book.author }}
-  </li>
-</ul>
-
